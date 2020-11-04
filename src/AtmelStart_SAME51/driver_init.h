@@ -29,6 +29,14 @@ extern struct wdt_descriptor       WDT_0;
 void WDT_0_CLOCK_init(void);
 void WDT_0_init(void);
 
+#include <hal_i2c_m_sync.h>
+
+extern struct i2c_m_sync_desc I2C_0;
+
+void I2C_0_CLOCK_init(void);
+void I2C_0_init(void);
+void I2C_0_PORT_init(void);
+
 /**
  * \brief Perform system initialization, initialize pins and clocks for
  * peripherals

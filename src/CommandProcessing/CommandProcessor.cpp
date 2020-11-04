@@ -534,6 +534,12 @@ static GCodeResult InitiateReset(const CanMessageReset& msg, const StringRef& re
 	return GCodeResult::ok;
 }
 
+struct gyroscope_data {
+	int16_t x, y, z;
+};
+
+extern struct gyroscope_data gyroscope;
+
 static GCodeResult GetInfo(const CanMessageReturnInfo& msg, const StringRef& reply, uint8_t& extra)
 {
 	static constexpr uint8_t LastDiagnosticsPart = 3;				// the last diagnostics part is typeDiagnosticsPart0 + 3
@@ -550,7 +556,9 @@ static GCodeResult GetInfo(const CanMessageReturnInfo& msg, const StringRef& rep
 		break;
 
 	case CanMessageReturnInfo::typeM408:
-		if (msg.param == 10) {
+		if (msg.param == 8) {
+			reply.catf("{\"gyro_x\":%d,\"gyro_y\":%d,\"gyro_z\":%d}", gyroscope.x, gyroscope.y, gyroscope.z);
+		} else if (msg.param == 10) {
 			for(int i = 0; i < 16; i++) {
 				TemperatureError err;
 				Heat::GetSensorTemperature(i, err);

@@ -36,6 +36,13 @@
 constexpr uint32_t FlashBlockSize = 0x00010000;							// the block size we assume for flash
 constexpr uint32_t FirmwareFlashStart = FLASH_ADDR + FlashBlockSize;	// we reserve 64K for the bootloader
 
+union gyroscope_data {
+	struct {
+		int16_t x, y, z;
+	};
+	uint8_t bytes[6];
+} gyroscope;
+
 static Uart uart0(3, SERCOM3_0_IRQn);
 
 extern "C" void SERCOM3_0_Handler()

@@ -24,6 +24,7 @@
 #include "Heating/Sensors/TemperatureSensor.h"
 #include "Fans/FansManager.h"
 #include <CanMessageFormats.h>
+#include <Hardware/MPU5060.h>
 
 #if SUPPORT_CLOSED_LOOP
 # include <ClosedLoop/ClockGen.h>
@@ -163,6 +164,7 @@ namespace Platform
 	static float mcuTemperatureAdjust = 0.0;
 
 	static uint32_t lastPollTime;
+	static uint32_t lastMPUread;
 	static uint32_t lastFanCheckTime = 0;
 	static unsigned int heatTaskIdleTicks = 0;
 
@@ -720,6 +722,9 @@ void Platform::Init()
 	uniqueId[4] ^= (uniqueId[4] >> 10);
 
 	lastPollTime = millis();
+	lastMPUread = millis();
+	I2C_0_init();
+	MPU5060_initialize();
 }
 
 void Platform::Spin()
@@ -925,6 +930,11 @@ void Platform::Spin()
 	if (millis() - whenLastCanMessageProcessed > GreenLedFlashTime)
 	{
 		WriteLed(1, false);
+	}
+
+	if (now - lastMPUread > 500) {	//	MS
+		lastMPUread = now;
+		MPU5060_read(gyroscope.bytes);
 	}
 
 	if (now - lastPollTime > 2000)

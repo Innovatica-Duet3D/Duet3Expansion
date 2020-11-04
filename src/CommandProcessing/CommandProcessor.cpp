@@ -550,6 +550,18 @@ static GCodeResult GetInfo(const CanMessageReturnInfo& msg, const StringRef& rep
 		break;
 
 	case CanMessageReturnInfo::typeM408:
+		if (msg.param == 10) {
+			for(int i = 0; i < 16; i++) {
+				TemperatureError err;
+				Heat::GetSensorTemperature(i, err);
+				if (err != TemperatureError::unknownSensor) {
+					FopDt m = Heat::GetHeaterModel(i);
+					reply.catf("[%d,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d]", \
+					           i, m.GetGain(), m.GetTimeConstant(), m.GetDeadTime(), m.GetMaxPwm(), m.GetVoltage(), m.UsePid(), m.IsInverted());
+				}
+			}
+			break;
+		}
 		// For now we ignore the parameter and always return the same set of info
 		// This command is currently only used by the ATE, which needs the board type and the voltages
 		reply.copy("{\"firmwareElectronics\":\"Duet 3 ");

@@ -68,6 +68,8 @@ namespace Heat
 	inline bool IsBedOrChamberHeater(int heater) { return false; }
 
 	void Diagnostics(const StringRef& reply);
+
+	FopDt GetHeaterModel(int heaterNum);
 };
 
 #endif /* SRC_HEATING_HEAT_H_ */

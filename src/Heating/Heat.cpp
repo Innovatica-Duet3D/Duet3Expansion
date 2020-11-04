@@ -561,4 +561,10 @@ void Heat::Diagnostics(const StringRef& reply)
 	reply.lcatf("Last sensors broadcast %08" PRIu64 " found %u %" PRIu32 " ticks ago", lastSensorsBroadcastWhich, lastSensorsFound, millis() - lastSensorsBroadcastWhen);
 }
 
+FopDt Heat::GetHeaterModel(int heaterNum)
+{
+	const auto h = FindHeater(heaterNum);
+	return (h.IsNotNull()) ? h->GetModel() : FopDt();
+}
+
 // End

@@ -538,6 +538,24 @@ struct gyroscope_data {
 	int16_t x, y, z;
 };
 
+struct pid_settings {
+	float gain;
+	float timeConstant;
+	float deadTime;
+	float maxPwm;
+	float standardVoltage;
+	bool usePid;
+	bool inverted;
+};
+
+#if 0
+static const char *SERIAL = "1234567";
+static struct pid_settings pid_settings = { 340.00, 40.00, 5.50, 1.00, 0.00, 1, 0 };
+#else
+static const char *SERIAL = "ABCDEFG";
+static struct pid_settings pid_settings = { 240.00, 100.00, 5.50, 1.00, 0.00, 1, 0 };
+#endif
+
 extern struct gyroscope_data gyroscope;
 
 static GCodeResult GetInfo(const CanMessageReturnInfo& msg, const StringRef& reply, uint8_t& extra)
@@ -557,7 +575,12 @@ static GCodeResult GetInfo(const CanMessageReturnInfo& msg, const StringRef& rep
 
 	case CanMessageReturnInfo::typeM408:
 		if (msg.param == 8) {
-			reply.catf("{\"gyro_x\":%d,\"gyro_y\":%d,\"gyro_z\":%d}", gyroscope.x, gyroscope.y, gyroscope.z);
+			reply.catf("{\"serial\":\"%s\",\"gyro_x\":%d,\"gyro_y\":%d,\"gyro_z\":%d}", SERIAL, gyroscope.x, gyroscope.y, gyroscope.z);
+			break;
+		} else if (msg.param == 9) {
+			struct pid_settings *p = &pid_settings;
+			reply.catf("[%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d]", p->gain, p->timeConstant, p->deadTime, p->maxPwm, p->standardVoltage, p->usePid, p->inverted);
+			break;
 		} else if (msg.param == 10) {
 			for(int i = 0; i < 16; i++) {
 				TemperatureError err;
